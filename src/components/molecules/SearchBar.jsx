@@ -4,8 +4,8 @@ import ApperIcon from '@/components/ApperIcon';
 
 const SearchBar = ({ 
   value, 
-  onChange, 
-  onClear,
+  onChange = () => {}, 
+  onClear = () => {},
   placeholder = "Search tasks...",
   className = '' 
 }) => {
@@ -18,7 +18,7 @@ const SearchBar = ({
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      onChange(localValue);
+      onChange?.(localValue);
     }, 300);
 
     return () => clearTimeout(timeoutId);
@@ -26,9 +26,8 @@ const SearchBar = ({
 
   const handleClear = () => {
     setLocalValue('');
-    onClear();
+    onClear?.();
   };
-
   return (
     <motion.div
       whileFocus={{ scale: 1.02 }}
