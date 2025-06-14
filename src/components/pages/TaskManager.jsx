@@ -1,14 +1,12 @@
-import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from 'react-toastify';
-import { taskService, categoryService } from '@/services';
-import Header from '@/components/organisms/Header';
-import FilterBar from '@/components/molecules/FilterBar';
-import TaskList from '@/components/organisms/TaskList';
-import TaskForm from '@/components/molecules/TaskForm';
-import ProgressRing from '@/components/molecules/ProgressRing';
-import ApperIcon from '@/components/ApperIcon';
-
+import React, { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "react-toastify";
+import { categoryService, taskService } from "@/services";
+import FilterBar from "@/components/molecules/FilterBar";
+import TaskList from "@/components/organisms/TaskList";
+import TaskForm from "@/components/molecules/TaskForm";
+import ProgressRing from "@/components/molecules/ProgressRing";
+import ApperIcon from "@/components/ApperIcon";
 const TaskManager = () => {
   // State Management
   const [tasks, setTasks] = useState([]);
@@ -21,11 +19,9 @@ const TaskManager = () => {
   const [editingTask, setEditingTask] = useState(null);
   const [selectedTasks, setSelectedTasks] = useState([]);
   
-  // Filter State
+// Filter State
   const [activeFilter, setActiveFilter] = useState('all');
   const [activeCategory, setActiveCategory] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-
   // Load initial data
   useEffect(() => {
     loadInitialData();
@@ -61,20 +57,9 @@ const TaskManager = () => {
       setLoading(false);
     }
   };
-
-  // Filtered and searched tasks
+// Filtered tasks
   const filteredTasks = useMemo(() => {
     let result = [...tasks];
-
-    // Apply search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(task => 
-        task.title.toLowerCase().includes(query) ||
-        task.category.toLowerCase().includes(query) ||
-        (task.notes && task.notes.toLowerCase().includes(query))
-      );
-    }
 
     // Apply category filter
     if (activeCategory) {
@@ -124,10 +109,9 @@ const TaskManager = () => {
       if (a.dueDate && b.dueDate) {
         return new Date(a.dueDate) - new Date(b.dueDate);
       }
-      
-      return 0;
+return 0;
     });
-  }, [tasks, searchQuery, activeCategory, activeFilter]);
+  }, [tasks, activeCategory, activeFilter]);
 
   // Task counts for filter badges
   const taskCounts = useMemo(() => {
@@ -251,15 +235,7 @@ const TaskManager = () => {
     const allSelected = selectedTasks.length === allTaskIds.length;
     
     setSelectedTasks(allSelected ? [] : allTaskIds);
-  };
-
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-  };
-
-  const handleClearSearch = () => {
-    setSearchQuery('');
-  };
+};
 
   if (error) {
     return (
@@ -281,21 +257,8 @@ const TaskManager = () => {
         </motion.div>
       </div>
     );
-  }
-
-  return (
+return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <Header
-        onQuickAdd={() => {
-          setShowTaskForm(true);
-          setEditingTask(null);
-        }}
-        onSearch={handleSearch}
-        searchValue={searchQuery}
-        onClearSearch={handleClearSearch}
-      />
-
       {/* Main Content */}
       <div className="flex flex-col lg:flex-row max-w-full overflow-hidden">
         {/* Sidebar with Progress & Filters */}
@@ -304,15 +267,12 @@ const TaskManager = () => {
           <div className="p-6 border-b border-gray-100">
             <div className="text-center">
               <ProgressRing progress={progress} size={100} strokeWidth={6} />
-              <h3 className="mt-4 text-lg font-semibold text-gray-900 font-display">
-                Daily Progress
-              </h3>
+              <h3 className="mt-4 text-lg font-semibold text-gray-900 font-display">Daily Progress</h3>
               <p className="text-sm text-gray-600">
                 {tasks.filter(t => t.completed).length} of {tasks.length} tasks completed
               </p>
             </div>
           </div>
-
           {/* Filter Bar */}
           <FilterBar
             activeFilter={activeFilter}
@@ -320,10 +280,8 @@ const TaskManager = () => {
             activeCategory={activeCategory}
             onCategoryChange={setActiveCategory}
             categories={categories}
-            taskCounts={taskCounts}
-          />
+            taskCounts={taskCounts} />
         </aside>
-
         {/* Task List */}
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-4xl mx-auto">
@@ -336,34 +294,34 @@ const TaskManager = () => {
               onSelectTask={handleSelectTask}
               onSelectAll={handleSelectAll}
               onBulkDelete={handleBulkDelete}
-              loading={loading}
-            />
+              loading={loading} />
           </div>
         </main>
       </div>
-
       {/* Task Form Modal */}
       <AnimatePresence>
-        {showTaskForm && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 z-40"
-              onClick={handleCloseForm}
-            />
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-              <TaskForm
-                task={editingTask}
-                categories={categories}
-                onSubmit={editingTask ? handleUpdateTask : handleCreateTask}
-                onCancel={handleCloseForm}
-                loading={loading}
-              />
-            </div>
-          </>
-        )}
+        {showTaskForm && <>
+          <motion.div
+            initial={{
+              opacity: 0
+            }}
+            animate={{
+              opacity: 1
+            }}
+            exit={{
+              opacity: 0
+            }}
+            className="fixed inset-0 bg-black/50 z-40"
+            onClick={handleCloseForm} />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <TaskForm
+              task={editingTask}
+              categories={categories}
+              onSubmit={editingTask ? handleUpdateTask : handleCreateTask}
+              onCancel={handleCloseForm}
+              loading={loading} />
+          </div>
+        </>}
       </AnimatePresence>
     </div>
   );
